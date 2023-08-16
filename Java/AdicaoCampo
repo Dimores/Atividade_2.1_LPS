@@ -1,0 +1,53 @@
+public class Aluno {
+    private String nome;
+    private String sexo;
+    private int idade;
+    private String matricula;
+    private int anoIngresso;
+    private double altura; // Novo atributo
+
+    public Aluno(String nome, String sexo, int idade, String matricula, int anoIngresso, double altura) {
+        this.nome = nome;
+        this.sexo = sexo;
+        this.idade = idade;
+        this.matricula = matricula;
+        this.anoIngresso = anoIngresso;
+        this.altura = altura;
+    }
+
+    // ... Métodos getters e setters para todos os atributos, incluindo altura ...
+
+    // Restante dos métodos da classe
+}
+
+public class AlunoDAO {
+    // ... Outros métodos e atributos da classe ...
+
+    public void save(Object obj) {
+        Aluno aluno = (Aluno) obj;
+
+        if (existeAlunoComNome(aluno.getNome())) {
+            throw new NomeDeAlunoDuplicadoException("Já existe um aluno com esse nome");
+        }
+
+        String sql = " INSERT INTO "
+                + " aluno(nome, sexo, idade, matricula, anoIngresso, altura) "
+                + " VALUES(?,?,?,?,?,?) ";
+        try (Connection connection = Persistencia.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, aluno.getNome());
+            statement.setString(2, aluno.getSexo());
+            statement.setInt(3, aluno.getIdade());
+            statement.setString(4, aluno.getMatricula());
+            statement.setInt(5, aluno.getAnoIngresso());
+            statement.setDouble(6, aluno.getAltura());
+
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Restante dos métodos da classe
+}
